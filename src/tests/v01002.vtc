@@ -1,0 +1,51 @@
+varnishtest "VSLP director SHA256"
+
+server s1 {
+	rxreq
+	txresp -body "ech3Ooj"
+} -start
+
+server s2 {
+	rxreq
+	txresp -body "ieQu2qua"
+} -start
+
+server s3 {
+	rxreq
+	txresp -body "xiuFi3Pe"
+} -start
+
+varnish v1 -vcl+backend {
+	import vslp from "${vmod_topbuild}/src/.libs/libvmod_vslp.so" ;
+
+	sub vcl_init {
+		new vd = vslp.vslp();
+		vd.add_backend(s1);
+		vd.add_backend(s2);
+		vd.add_backend(s3);
+		vd.set_rampup_ratio(0);
+		vd.set_hash(SHA256);
+		vd.init_hashcircle(25);
+	}
+
+	sub vcl_recv {
+		set req.backend = vd.backend();
+		return(pass);
+	}
+
+} -start
+
+
+client c1 {
+	txreq -url /Boo0aixe
+	rxresp
+	expect resp.body == "ech3Ooj"
+
+	txreq -url /eishoSu2
+	rxresp
+	expect resp.body == "ieQu2qua"
+
+	txreq -url /Aunah3uo
+	rxresp
+	expect resp.body == "xiuFi3Pe"
+} -run

@@ -1,0 +1,58 @@
+varnishtest "VSLP director/int key"
+
+server s1 {
+	rxreq
+	txresp -body "ech3Ooj"
+} -start
+
+server s2 {
+	rxreq
+	txresp -body "ieQu2qua"
+} -start
+
+server s3 {
+	rxreq
+	txresp -body "xiuFi3Pe"
+} -start
+
+varnish v1 -vcl+backend {
+	import vslp from "${vmod_topbuild}/src/.libs/libvmod_vslp.so" ;
+
+	sub vcl_init {
+		new vd = vslp.vslp();
+		vd.add_backend(s1);
+		vd.add_backend(s2);
+		vd.add_backend(s3);
+		vd.set_rampup_ratio(0);
+		vd.init_hashcircle(25);
+	}
+
+	sub vcl_recv {
+		if(req.url == "/1") {
+			set req.backend = vd.backend_by_int(1);
+		}
+		if(req.url == "/2") {
+			set req.backend = vd.backend_by_int(2147483647);
+		}
+		if(req.url == "/3") {
+			set req.backend = vd.backend_by_int(4294967295);
+		}
+		return(pass);
+	}
+
+} -start
+
+
+client c1 {
+	txreq -url /1
+	rxresp
+	expect resp.body == "ech3Ooj"
+
+	txreq -url /2
+	rxresp
+	expect resp.body == "ieQu2qua"
+
+	txreq -url /3
+	rxresp
+	expect resp.body == "xiuFi3Pe"
+} -run
