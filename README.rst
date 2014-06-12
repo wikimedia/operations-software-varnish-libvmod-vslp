@@ -202,6 +202,12 @@ HISTORY
 
 Version 1.0: Initial version.
 
+ACKNOWLEDGEMENTS
+================
+
+Development of this module was partially sponsored by Deutsche Telekom AG – Products & Innovation
+
+
 COPYRIGHT
 =========
 
