@@ -61,7 +61,7 @@ struct vslpdir {
 	VCL_INT					replicas;
 };
 
-void vslpdir_new(struct vslpdir **vslpdp, const char *vcl_name, void *priv);
+void vslpdir_new(struct vslpdir **vslpdp, const char *vcl_name);
 void vslpdir_delete(struct vslpdir **vslpdp);
 void vslpdir_add_backend(struct vslpdir *vslpd, VCL_BACKEND be);
 void vslpdir_set_rampup_ratio(struct vslpdir *vslpd, VCL_REAL ratio);
@@ -71,5 +71,5 @@ void vslpdir_init_hashcircle(struct vslpdir *vslpd, VCL_INT replicas);
 void vslpdir_lock(struct vslpdir *vslpd);
 void vslpdir_unlock(struct vslpdir *vslpd);
 void vslpdir_expand(struct vslpdir *vslpd, unsigned n);
-unsigned vslpdir_any_healthy(struct vslpdir *vslpd, const uint8_t *digest);
+unsigned vslpdir_any_healthy(struct vslpdir *vslpd);
 VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash);

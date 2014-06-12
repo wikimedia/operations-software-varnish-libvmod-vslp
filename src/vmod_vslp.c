@@ -60,7 +60,7 @@ vmod_vslp__init(const struct vrt_ctx *ctx, struct vmod_vslp_vslp **vslpdp, const
 	AN(vslpd);
 
 	*vslpdp = vslpd;
-	vslpdir_new(&vslpd->vslpd, vcl_name, vslpd);
+	vslpdir_new(&vslpd->vslpd, vcl_name);
 }
 
 VCL_VOID __match_proto__(td_vslp_vslp__fini)

@@ -189,7 +189,7 @@ vslp_choose_next_healthy(struct vslp_state *state, uint32_t n_retry)
 		be = state->vslpd->backend[chosen];
 		AN(be);
 
-		if(be->healthy(be, state->ctx->bo->digest))
+		if(be->healthy(be, NULL))
 		{
 			vslp_be_healthy(state, chosen);
 			break;
@@ -202,7 +202,7 @@ vslp_choose_next_healthy(struct vslp_state *state, uint32_t n_retry)
 }
 
 void
-vslpdir_new(struct vslpdir **vslpdp, const char *vcl_name, void *priv)
+vslpdir_new(struct vslpdir **vslpdp, const char *vcl_name)
 {
 	struct vslpdir *vslpd;
 
@@ -369,7 +369,7 @@ void vslpdir_expand(struct vslpdir *vslpd, unsigned n)
 }
 
 unsigned
-vslpdir_any_healthy(struct vslpdir *vslpd, const uint8_t *digest)
+vslpdir_any_healthy(struct vslpdir *vslpd)
 {
 	unsigned retval = 0;
         VCL_BACKEND be;
@@ -380,7 +380,7 @@ vslpdir_any_healthy(struct vslpdir *vslpd, const uint8_t *digest)
         for (u = 0; u < vslpd->n_backend; u++) {
 		be = vslpd->backend[u];
 		CHECK_OBJ_NOTNULL(be, DIRECTOR_MAGIC);
-		if (be->healthy(be, digest)) {
+		if (be->healthy(be, NULL)) {
 			retval = 1;
 			break;
 		}
@@ -438,7 +438,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 	be = vslpd->backend[chosen];
 	AN(be);
 
-	if (be->healthy(be, ctx->bo->digest))
+	if (be->healthy(be, NULL))
 	{
 		if(!vslp_be_healthy(&state, chosen))
 			 be_choice ^= be_choice;

@@ -9,7 +9,7 @@ AM_LDFLAGS  = $(AM_LT_LDFLAGS)
 vmoddir = $(VMODDIR)
 vmod_LTLIBRARIES = libvmod_vslp.la
 vmod_srcdir = $(top_srcdir)/src
-vmodtool = $(VARNISHSRC)/lib/libvcl/vmodtool.py
+vmodtool = $(VARNISHSRC)/lib/libvcc/vmodtool.py
 
 libvmod_vslp_la_LDFLAGS = $(AM_LDFLAGS) -module -export-dynamic -avoid-version -shared
 

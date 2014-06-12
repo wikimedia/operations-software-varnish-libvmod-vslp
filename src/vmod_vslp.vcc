@@ -26,16 +26,15 @@
 # SUCH DAMAGE.
 
 
-Module vslp
+$Module vslp 3
 
-Object vslp() {
-        Method VOID .add_backend(BACKEND)
-        Method VOID .set_rampup_ratio(REAL)
-        Method VOID .set_rampup_time(DURATION)
-        Method VOID .set_hash(ENUM { CRC32, SHA256, RS })
-	Method VOID .init_hashcircle(INT)
-	Method BACKEND .backend()
-        Method BACKEND .backend_by_int(INT)
-        Method BACKEND .backend_by_string(STRING)
-        Method BACKEND .backend_by_string_hash(STRING, ENUM { CRC32, SHA256, RS })
-}
+$Object vslp()
+$Method VOID .add_backend(BACKEND)
+$Method VOID .set_rampup_ratio(REAL)
+$Method VOID .set_rampup_time(DURATION)
+$Method VOID .set_hash(ENUM { CRC32, SHA256, RS })
+$Method VOID .init_hashcircle(INT)
+$Method BACKEND .backend()
+$Method BACKEND .backend_by_int(INT)
+$Method BACKEND .backend_by_string(STRING)
+$Method BACKEND .backend_by_string_hash(STRING, ENUM { CRC32, SHA256, RS })
