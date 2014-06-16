@@ -29,7 +29,7 @@ SYNOPSIS
         }
 
 	sub vcl_recv {
-	    	set req.backend = vd.backend();
+               set req.backend_hint = vd.backend();
         }
 
 
