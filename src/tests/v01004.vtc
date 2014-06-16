@@ -29,13 +29,13 @@ varnish v1 -vcl+backend {
 
 	sub vcl_recv {
 		if(req.url == "/1") {
-                        set req.backend = vd.backend_by_string("/eishoSu2");
+                        set req.backend_hint = vd.backend_by_string("/eishoSu2");
                 }
                 if(req.url == "/2") {
-                        set req.backend = vd.backend_by_string_hash("/eishoSu2", SHA256);
+                        set req.backend_hint = vd.backend_by_string_hash("/eishoSu2", SHA256);
                 }
                 if(req.url == "/3") {
-                        set req.backend = vd.backend_by_string_hash("/oob3dahS", RS);
+                        set req.backend_hint = vd.backend_by_string_hash("/oob3dahS", RS);
                 }
 		return(pass);
 	}
