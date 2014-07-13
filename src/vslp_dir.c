@@ -304,7 +304,7 @@ vslpdir_init_hashcircle(struct vslpdir *vslpd, VCL_INT replicas)
 		sizeof(struct vslp_hostnode));
 	AN(vslpd->hashcircle);
 	AN(vslpd->backend);
-	if(vslpd->backend[1] == NULL)
+	if(vslpd->backend[0] == NULL)
 	{
 		vslpdir_unlock(vslpd);
 		WRONG("VSLP director doesn't have any backends");
