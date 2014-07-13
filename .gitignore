@@ -24,3 +24,6 @@ m4
 missing
 Makefile.in
 stamp-h1
+compile
+src/vmod_vslp.man.rst
+src/vmod_vslp.rst
