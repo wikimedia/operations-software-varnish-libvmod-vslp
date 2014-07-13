@@ -400,7 +400,11 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 	AN(ctx->req);
 
 	be_choice = (scalbn(random(), -31) > vslpd->altsrv_p);
-	restarts = ctx->req->restarts;
+
+	if (ctx->bo)
+		restarts = ctx->bo->retries;
+	else
+		restarts = ctx->req->restarts;
 
 	state.picklist = 0;
 	state.vslpd = vslpd;
