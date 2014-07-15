@@ -406,53 +406,76 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 
 	state.idx = vslp_get_prefered_idx(vslpd, hash);
 	chosen = vslp_choose_next(&state, n_retry);
+
+	if(chosen >= 0) {
+		VSLb(ctx->vsl, SLT_Debug,
+		    "VSLP picked preferred backend %2i for key %8x",
+		    chosen, hash);
+		be = vslpd->backend[chosen];
+		AN(be);
+	} else {
+		be = NULL;
+	}
 	
 	while(restarts > 0)
 	{
 		n_retry++;
 
 		chosen = vslp_choose_next_healthy(&state, n_retry);
-		if(chosen < 0)
-			WRONG("VSLP failed to choose a backend");
 
-		restarts--;
-		if(restarts <= 0)
-		{
-			VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in restarts: %2i", chosen, hash, restarts_o);
-
+		if(chosen < 0) {
+			VSLb(ctx->vsl, SLT_Debug,
+			    "VSLP failed to find other healthy backend for key %8x in restarts: %2i/%2i - using previous",
+			    hash, restarts, restarts_o);
+		} else {
+			VSLb(ctx->vsl, SLT_Debug,
+			    "VSLP picked backend %2i for key %8x in restarts: %2i/%2i",
+			    chosen, hash, restarts, restarts_o);
 			be = vslpd->backend[chosen];
 			AN(be);
-			return be;
 		}
+
+		if(--restarts <= 0)
+			return be;
 	}
 
-	if(chosen < 0)
-		WRONG("VSLP failed to choose a backend");
-
-	be = vslpd->backend[chosen];
-	AN(be);
+	if (! be) {
+		VSLb(ctx->vsl, SLT_Debug, "VSLP no backend found");
+		return NULL;
+	}
 
 	if (be->healthy(be, NULL))
 	{
 		if(!vslp_be_healthy(&state, chosen))
 			 be_choice ^= be_choice;
+
 		if(!be_choice)
 		{
 			chosen = vslp_choose_next_healthy(&state, n_retry);
-			if(chosen < 0)
-				WRONG("VSLP failed to choose a backend");
-			be = vslpd->backend[chosen];
+			if(chosen < 0) {
+				VSLb(ctx->vsl, SLT_Debug,
+				    "VSLP found no alternative backend in healthy");
+			} else {
+				VSLb(ctx->vsl, SLT_Debug,
+				    "VSLP picked alternative backend %2i for key %8x in healthy",
+				    chosen, hash);
+				be = vslpd->backend[chosen];
+			}
 		}
-		VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in healthy", chosen, hash);
 	}
 	else
 	{
 		vslp_be_unhealthy(&state, chosen);
 		chosen = vslp_choose_next_healthy(&state, n_retry);
-		if(chosen < 0)
-			WRONG("VSLP failed to choose a backend");
-		be = vslpd->backend[chosen];
-		VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in unhealthy", chosen, hash);
+		if(chosen < 0) {
+			VSLb(ctx->vsl, SLT_Debug,
+			    "VSLP found no alternative backend in unhealthy");
+		} else {
+			VSLb(ctx->vsl, SLT_Debug,
+			    "VSLP picked alternative backend %2i for key %8x in unhealthy",
+			    chosen, hash);
+			be = vslpd->backend[chosen];
+		}
 	}
 
 	AN(be);
