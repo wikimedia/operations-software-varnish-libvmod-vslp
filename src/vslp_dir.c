@@ -393,18 +393,19 @@ vslpdir_any_healthy(struct vslpdir *vslpd)
 VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash)
 {
 	VCL_BACKEND be;
-	int chosen, be_choice, restarts, n_retry = 0;
+	int chosen, be_choice, restarts_o, restarts, n_retry = 0;
 	struct vslp_state state;
 
         CHECK_OBJ_NOTNULL(vslpd, VSLPDIR_MAGIC);
-	AN(ctx->req);
 
 	be_choice = (scalbn(random(), -31) > vslpd->altsrv_p);
 
-	if (ctx->bo)
-		restarts = ctx->bo->retries;
-	else
-		restarts = ctx->req->restarts;
+	if (ctx->bo) {
+		restarts = restarts_o = ctx->bo->retries;
+	} else {
+		AN(ctx->req);
+		restarts = restarts_o = ctx->req->restarts;
+	}
 
 	state.picklist = 0;
 	state.vslpd = vslpd;
@@ -428,7 +429,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		if(restarts <= 0)
 		{
 			char msg[56];
-			sprintf(msg, "VSLP picked backend %2i for key %8x in restarts: %2i", chosen, hash, ctx->req->restarts);
+			sprintf(msg, "VSLP picked backend %2i for key %8x in restarts: %2i", chosen, hash, restarts_o);
 			vlog_debug(ctx, msg);
 			be = vslpd->backend[chosen];
 			AN(be);

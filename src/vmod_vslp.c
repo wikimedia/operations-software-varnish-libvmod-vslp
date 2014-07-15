@@ -125,14 +125,20 @@ vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd)
 {
 	uint32_t hash;
 	VCL_BACKEND be;
+	struct http *http;
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
-	AN(ctx->http_req);
-	AN(ctx->http_req->hd);
+	/* client or backend context ? */
+	if (ctx->http_req) {
+		AN(http = ctx->http_req);
+	} else {
+		AN(ctx->http_bereq);
+		AN(http = ctx->http_bereq);
+	}
 
-	hash = vslpd->vslpd->hash_fp(ctx->http_req->hd[HTTP_HDR_URL].b);
+	hash = vslpd->vslpd->hash_fp(http->hd[HTTP_HDR_URL].b);
 	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
 
 	return (be);
