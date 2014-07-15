@@ -27,6 +27,12 @@ varnish v1 -vcl+backend {
 		vd.init_hashcircle(25);
 	}
 
+	sub recv_sub {
+                if(req.url == "/3") {
+                        set req.backend_hint = vd.backend_by_string_hash(req.http.X-Hash, RS);
+                }
+	}
+
 	sub vcl_recv {
 		if(req.url == "/1") {
                         set req.backend_hint = vd.backend_by_string("/eishoSu2");
@@ -34,9 +40,8 @@ varnish v1 -vcl+backend {
                 if(req.url == "/2") {
                         set req.backend_hint = vd.backend_by_string_hash("/eishoSu2", SHA256);
                 }
-                if(req.url == "/3") {
-                        set req.backend_hint = vd.backend_by_string_hash("/oob3dahS", RS);
-                }
+		set req.http.X-Hash = "/oob3dahS";
+		call recv_sub;
 		return(pass);
 	}
 
