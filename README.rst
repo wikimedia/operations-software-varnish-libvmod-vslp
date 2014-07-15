@@ -7,7 +7,7 @@ Varnish Consistent Hashing Director Module
 ------------------------------------------
 
 :Author: Julian Wiesener
-:Date: 2013-08-14
+:Date: 2014-07-16
 :Version: 1.0
 :Manual section: 3
 
@@ -30,6 +30,12 @@ SYNOPSIS
 
 	sub vcl_recv {
                set req.backend_hint = vd.backend();
+        }
+
+	# and/or
+
+	sub vcl_backend_fetch {
+               set bereq.backend = vd.backend();
         }
 
 
@@ -196,6 +202,10 @@ Make targets:
 * make install - installs your vmod in `VMODDIR`
 * make check - runs the unit tests in ``src/tests/*.vtc``
 
+
+MISSING
+=======
+* Documentation of interactions with restarts/retries
 
 HISTORY
 =======
