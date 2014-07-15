@@ -53,17 +53,6 @@ struct vslp_state {
 	const struct vrt_ctx *ctx;
 };
 
-static void
-vlog_debug(const struct vrt_ctx *ctx, char msg[])
-{
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	AN(ctx->vsl);
-	txt t;
-	t.b = msg;
-	t.e = msg + strlen(msg);
-	VSLbt(ctx->vsl, SLT_Debug, t);
-}
-
 static int
 hostnode_compare(struct vslp_hostnode *a, struct vslp_hostnode *b)
 {
@@ -332,11 +321,10 @@ vslpdir_init_hashcircle(struct vslpdir *vslpd, VCL_INT replicas)
 	{
         	for (j = 0; j < replicas; j++)
 		{
-			//FIXME can't log due VSLbt in vcl_init
-			printf("VSLP hashcircle[%5ld] = {point = %8x, host = %2d}\n",
-                                i * replicas + j,
-                                vslpd->hashcircle[i * replicas + j].point,
-                                vslpd->hashcircle[i * replicas + j].host);
+			VSL(SLT_Debug, 0, "VSLP hashcircle[%5ld] = {point = %8x, host = %2d}\n",
+			    i * replicas + j,
+			    vslpd->hashcircle[i * replicas + j].point,
+			    vslpd->hashcircle[i * replicas + j].host);
 		}
 	}
 
@@ -397,6 +385,8 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 	struct vslp_state state;
 
         CHECK_OBJ_NOTNULL(vslpd, VSLPDIR_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	AN(ctx->vsl);
 
 	be_choice = (scalbn(random(), -31) > vslpd->altsrv_p);
 
@@ -428,9 +418,8 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		restarts--;
 		if(restarts <= 0)
 		{
-			char msg[56];
-			sprintf(msg, "VSLP picked backend %2i for key %8x in restarts: %2i", chosen, hash, restarts_o);
-			vlog_debug(ctx, msg);
+			VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in restarts: %2i", chosen, hash, restarts_o);
+
 			be = vslpd->backend[chosen];
 			AN(be);
 			return be;
@@ -454,9 +443,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 				WRONG("VSLP failed to choose a backend");
 			be = vslpd->backend[chosen];
 		}
-		char msg[51];
-		sprintf(msg, "VSLP picked backend %2i for key %8x in healthy", chosen, hash);
-		vlog_debug(ctx, msg);
+		VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in healthy", chosen, hash);
 	}
 	else
 	{
@@ -465,9 +452,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		if(chosen < 0)
 			WRONG("VSLP failed to choose a backend");
 		be = vslpd->backend[chosen];
-		char msg[53];
-		sprintf(msg, "VSLP picked backend %2i for key %8x in unhealthy", chosen, hash);
-		vlog_debug(ctx, msg);
+		VSLb(ctx->vsl, SLT_Debug, "VSLP picked backend %2i for key %8x in unhealthy", chosen, hash);
 	}
 
 	AN(be);
