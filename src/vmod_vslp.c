@@ -166,7 +166,7 @@ vmod_vslp_backend_by_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vs
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
-	hash = vslpd->vslpd->hash_fp(s);
+	hash = vslpd->vslpd->hash_fp(s ? s : "");
 	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
 
 	return (be);
@@ -183,7 +183,7 @@ vmod_vslp_backend_by_string_hash(const struct vrt_ctx *ctx, struct vmod_vslp_vsl
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
 	hash_fp = vslp_get_hash_fp(hash_m);
-	hash = hash_fp(s);
+	hash = hash_fp(s ? s : "");
 	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
 
 	return (be);

@@ -3,6 +3,10 @@ varnishtest "VSLP director String"
 server s1 {
 	rxreq
 	txresp -body "ech3Ooj"
+	rxreq
+	txresp -body "ech3Ooj"
+	rxreq
+	txresp -body "ech3Ooj"
 } -start
 
 server s2 {
@@ -28,20 +32,22 @@ varnish v1 -vcl+backend {
 	}
 
 	sub recv_sub {
-                if(req.url == "/3") {
-                        set req.backend_hint = vd.backend_by_string_hash(req.http.X-Hash, RS);
-                }
+		set req.backend_hint = vd.backend_by_string_hash(req.http.X-Hash, RS);
 	}
 
 	sub vcl_recv {
 		if(req.url == "/1") {
                         set req.backend_hint = vd.backend_by_string("/eishoSu2");
-                }
-                if(req.url == "/2") {
+                } else if (req.url == "/2") {
                         set req.backend_hint = vd.backend_by_string_hash("/eishoSu2", SHA256);
-                }
-		set req.http.X-Hash = "/oob3dahS";
-		call recv_sub;
+                } else if (req.url == "/3") {
+			set req.http.X-Hash = "/oob3dahS";
+			call recv_sub;
+		} else if (req.url == "/null_by_string") {
+                        set req.backend_hint = vd.backend_by_string(req.http.NonExistent);
+		} else if (req.url == "/null_by_string_hash") {
+                        set req.backend_hint = vd.backend_by_string_hash(req.http.NonExistent, SHA256);
+		}
 		return(pass);
 	}
 
@@ -60,4 +66,12 @@ client c1 {
 	txreq -url /3
 	rxresp
 	expect resp.body == "xiuFi3Pe"
+
+	txreq -url /null_by_string
+	rxresp
+	expect resp.body == "ech3Ooj"
+
+	txreq -url /null_by_string_hash
+	rxresp
+	expect resp.body == "ech3Ooj"
 } -run
