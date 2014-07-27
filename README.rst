@@ -147,10 +147,23 @@ Initializes the hash ring. This function must be called after all backends are
 added. The argument is the numbers of replicas the hash ring contains for each
 backend.
 
+INT .hash_string(STRING, ENUM { CRC32, SHA256, RS })
+----------------------------------------------------
+
+Returns the hash of its first argument using the hash
+algorithm defined.
+
 BACKEND .backend()
 ------------------
 
 Returns a backend based on the default hash of the request URL.
+
+BACKEND .backend_n(INT, BOOL, BOOL, INT)
+----------------------------
+
+Returns the n-th backend (first parameter) with respect of altsrv_p (second
+parameter) and respect of its healthy state (third parameter) for the given
+hash (last parameter).
 
 BACKEND .backend_by_int(INT)
 ----------------------------
@@ -162,11 +175,14 @@ BACKEND .backend_by_string(STRING)
 ----------------------------------
 
 Returns a backend based on the default hash of its argument.
+DEPRECATED: use .backend_by_int(hash_string()) instead
 
 BACKEND .backend_by_string_hash(STRING, ENUM { CRC32, SHA256, RS })
 -------------------------------------------------------------------
+
 Returns a backend based on the hash of its first argument using the hash
 algorithm defined.
+DEPRECATED: use .backend_by_int(hash_string()) instead
 
 
 LIMITATIONS

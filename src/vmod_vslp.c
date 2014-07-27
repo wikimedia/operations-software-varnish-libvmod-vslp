@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <arpa/inet.h>
 
 #include "cache/cache.h"
@@ -120,6 +121,21 @@ vmod_vslp_init_hashcircle(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslp
 	vslpdir_init_hashcircle(vslpd->vslpd, replicas);
 }
 
+VCL_INT __match_proto__(td_vslp_vslp_hash_string)
+vmod_vslp_hash_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_STRING s, VCL_ENUM hash_m)
+{
+	uint32_t hash;
+	hash_func hash_fp;
+
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
+
+	hash_fp = vslp_get_hash_fp(hash_m);
+	hash = hash_fp(s ? s : "");
+
+	return (hash);
+}
+
 VCL_BACKEND __match_proto__(td_vslp_vslp_backend)
 vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd)
 {
@@ -139,7 +155,20 @@ vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd)
 	}
 
 	hash = vslpd->vslpd->hash_fp(http->hd[HTTP_HDR_URL].b);
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
+
+	return (be);
+}
+
+VCL_BACKEND __match_proto__(td_vslp_vslp_backend_n)
+vmod_vslp_backend_n(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i)
+{
+	VCL_BACKEND be;
+
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
+
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, i, n, altsrv_p, healthy);
 
 	return (be);
 }
@@ -152,7 +181,7 @@ vmod_vslp_backend_by_int(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, i);
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, i, 0, true, true);
 
 	return (be);
 }
@@ -167,7 +196,7 @@ vmod_vslp_backend_by_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vs
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
 	hash = vslpd->vslpd->hash_fp(s ? s : "");
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
 
 	return (be);
 }
@@ -184,7 +213,7 @@ vmod_vslp_backend_by_string_hash(const struct vrt_ctx *ctx, struct vmod_vslp_vsl
 
 	hash_fp = vslp_get_hash_fp(hash_m);
 	hash = hash_fp(s ? s : "");
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash);
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
 
 	return (be);
 }

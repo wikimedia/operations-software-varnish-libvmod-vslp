@@ -72,4 +72,5 @@ void vslpdir_lock(struct vslpdir *vslpd);
 void vslpdir_unlock(struct vslpdir *vslpd);
 void vslpdir_expand(struct vslpdir *vslpd, unsigned n);
 unsigned vslpdir_any_healthy(struct vslpdir *vslpd);
-VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash);
+VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash,
+	       VCL_INT n_retry, VCL_BOOL altsrv_p, VCL_BOOL healthy);

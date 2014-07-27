@@ -378,23 +378,30 @@ vslpdir_any_healthy(struct vslpdir *vslpd)
 	return (retval);
 }
 
-VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash)
+VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, uint32_t hash,
+		VCL_INT n_retry, VCL_BOOL altsrv_p, VCL_BOOL healthy)
 {
 	VCL_BACKEND be;
-	int chosen, be_choice, restarts_o, restarts, n_retry = 0;
+	int chosen, be_choice, restarts_o = 0, restarts = 0;
 	struct vslp_state state;
 
         CHECK_OBJ_NOTNULL(vslpd, VSLPDIR_MAGIC);
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	AN(ctx->vsl);
 
-	be_choice = (scalbn(random(), -31) > vslpd->altsrv_p);
+	if(altsrv_p)
+		be_choice = (scalbn(random(), -31) > vslpd->altsrv_p);
 
-	if (ctx->bo) {
-		restarts = restarts_o = ctx->bo->retries;
+
+	if(n_retry == 0) {
+		if (ctx->bo) {
+			restarts = restarts_o = ctx->bo->retries;
+		} else {
+			AN(ctx->req);
+			restarts = restarts_o = ctx->req->restarts;
+		}
 	} else {
-		AN(ctx->req);
-		restarts = restarts_o = ctx->req->restarts;
+		n_retry--;
 	}
 
 	state.picklist = 0;
@@ -421,7 +428,10 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 	{
 		n_retry++;
 
-		chosen = vslp_choose_next_healthy(&state, n_retry);
+		if(healthy)
+			chosen = vslp_choose_next_healthy(&state, n_retry);
+		else
+			chosen = vslp_choose_next(&state, n_retry);
 
 		if(chosen < 0) {
 			VSLb(ctx->vsl, SLT_Debug,
@@ -444,12 +454,17 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		return NULL;
 	}
 
+	if (! healthy) {
+		AN(be);
+		return (be);
+	}
+
 	if (be->healthy(be, NULL))
 	{
 		if(!vslp_be_healthy(&state, chosen))
 			 be_choice ^= be_choice;
 
-		if(!be_choice)
+		if(altsrv_p && !be_choice)
 		{
 			chosen = vslp_choose_next_healthy(&state, n_retry);
 			if(chosen < 0) {
