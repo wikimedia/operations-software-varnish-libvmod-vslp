@@ -32,21 +32,21 @@ varnish v1 -vcl+backend {
 	}
 
 	sub recv_sub {
-		set req.backend_hint = vd.backend_by_string_hash(req.http.X-Hash, RS);
+		set req.backend_hint = vd.backend(hash=vd.hash_string(req.http.X-Hash, RS));
 	}
 
 	sub vcl_recv {
 		if(req.url == "/1") {
-			set req.backend_hint = vd.backend_by_string("/eishoSu2");
+			set req.backend_hint = vd.backend(hash=vd.hash_string("/eishoSu2"));
 		} else if (req.url == "/2") {
-			set req.backend_hint = vd.backend_by_string_hash("/eishoSu2", SHA256);
+			set req.backend_hint = vd.backend(hash=vd.hash_string(alg=SHA256, string="/eishoSu2"));
 		} else if (req.url == "/3") {
 			set req.http.X-Hash = "/oob3dahS";
 			call recv_sub;
 		} else if (req.url == "/null_by_string") {
-			set req.backend_hint = vd.backend_by_string(req.http.NonExistent);
+			set req.backend_hint = vd.backend(hash=vd.hash_string(req.http.NonExistent));
 		} else if (req.url == "/null_by_string_hash") {
-			set req.backend_hint = vd.backend_by_string_hash(req.http.NonExistent, SHA256);
+			set req.backend_hint = vd.backend(hash=vd.hash_string(req.http.NonExistent, SHA256));
 		}
 		return(pass);
 	}

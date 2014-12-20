@@ -136,84 +136,27 @@ vmod_vslp_hash_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, V
 	return (hash);
 }
 
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend)
-vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd)
-{
-	uint32_t hash;
-	VCL_BACKEND be;
-	struct http *http;
-
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
-
-	/* client or backend context ? */
-	if (ctx->http_req) {
-		AN(http = ctx->http_req);
-	} else {
-		AN(ctx->http_bereq);
-		AN(http = ctx->http_bereq);
-	}
-
-	hash = vslpd->vslpd->hash_fp(http->hd[HTTP_HDR_URL].b);
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
-
-	return (be);
-}
-
 VCL_BACKEND __match_proto__(td_vslp_vslp_backend_n)
-vmod_vslp_backend_n(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i)
+vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i)
 {
+	uint32_t hash = (uint32_t) i;
 	VCL_BACKEND be;
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
 
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, i, n, altsrv_p, healthy);
-
-	return (be);
-}
-
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend_by_int)
-vmod_vslp_backend_by_int(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT i)
-{
-	VCL_BACKEND be;
-
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
-
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, i, 0, true, true);
-
-	return (be);
-}
-
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend_by_string)
-vmod_vslp_backend_by_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_STRING s)
-{
-	uint32_t hash;
-	VCL_BACKEND be;
-
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
-
-	hash = vslpd->vslpd->hash_fp(s ? s : "");
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
-
-	return (be);
-}
-
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend_by_string_hash)
-vmod_vslp_backend_by_string_hash(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_STRING s, VCL_ENUM hash_m)
-{
-	uint32_t hash;
-	hash_func hash_fp;
-	VCL_BACKEND be;
-
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(vslpd, VMOD_VSLP_VSLP_MAGIC);
-
-	hash_fp = vslp_get_hash_fp(hash_m);
-	hash = hash_fp(s ? s : "");
-	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, 0, true, true);
+	if(!hash) {
+		/* client or backend context ? */
+		struct http *http;
+		if (ctx->http_req) {
+			AN(http = ctx->http_req);
+		} else {
+			AN(ctx->http_bereq);
+			AN(http = ctx->http_bereq);
+		}
+		hash = vslpd->vslpd->hash_fp(http->hd[HTTP_HDR_URL].b);
+	}
+	be = vslpdir_pick_be(vslpd->vslpd, ctx, hash, n, altsrv_p, healthy);
 
 	return (be);
 }

@@ -31,7 +31,7 @@ varnish v1 -vcl+backend {
 	}
 
 	sub vcl_recv {
-		set req.backend_hint = vd.backend_by_string("/eishoSu2");
+		set req.backend_hint = vd.backend(hash=vd.hash_string("/eishoSu2"));
 		return(pass);
 	}
 

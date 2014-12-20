@@ -8,7 +8,7 @@ Varnish Consistent Hashing Director Module
 
 :Author: Julian Wiesener
 :Date: 2014-07-16
-:Version: 1.0
+:Version: 1.1
 :Manual section: 3
 
 .. _synopsis:
@@ -147,42 +147,23 @@ Initializes the hash ring. This function must be called after all backends are
 added. The argument is the numbers of replicas the hash ring contains for each
 backend.
 
-INT .hash_string(STRING, ENUM { CRC32, SHA256, RS })
-----------------------------------------------------
+INT .hash_string(STRING string, ENUM { CRC32, SHA256, RS } alg)
+---------------------------------------------------------------
 
 Returns the hash of its first argument using the hash
-algorithm defined.
+algorithm defined, defaults to CRC32.
 
-BACKEND .backend()
-------------------
 
-Returns a backend based on the default hash of the request URL.
+BACKEND .backend(INT nte, BOOL altsrv_p, BOOL healthy, INT hash)
+----------------------------------------------------------------
 
-BACKEND .backend_n(INT, BOOL, BOOL, INT)
-----------------------------
+Returns the nth backend with respect of altsrv_p  and respect of its healthy
+state for the given hash. All parameters are optional, the defaults are:
 
-Returns the n-th backend (first parameter) with respect of altsrv_p (second
-parameter) and respect of its healthy state (third parameter) for the given
-hash (last parameter).
-
-BACKEND .backend_by_int(INT)
-----------------------------
-
-Returns a backend based on the value of its parameter. The value should be
-evenly distributet between 0 and MAX_INT to get a good distribution of requests.
-
-BACKEND .backend_by_string(STRING)
-----------------------------------
-
-Returns a backend based on the default hash of its argument.
-DEPRECATED: use .backend_by_int(hash_string()) instead
-
-BACKEND .backend_by_string_hash(STRING, ENUM { CRC32, SHA256, RS })
--------------------------------------------------------------------
-
-Returns a backend based on the hash of its first argument using the hash
-algorithm defined.
-DEPRECATED: use .backend_by_int(hash_string()) instead
+ nte=0 will pick the first backend under respect of VSLP rules
+ altsrv_p=ture
+ healthy=true
+ hash=0 will use a CRC32 of the request URL
 
 
 LIMITATIONS
