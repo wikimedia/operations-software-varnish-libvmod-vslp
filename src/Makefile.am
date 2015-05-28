@@ -1,17 +1,12 @@
+AM_CPPFLAGS = @VMOD_INCLUDES@ -Wall -Werror
+#	-I$(VARNISHSRC)/include \
+#	-I$(VARNISHSRC)/bin/varnishd \
+#	-I$(VARNISHSRC)/lib/libvgz
 
-AM_CPPFLAGS = \
-	-I$(VARNISHSRC)/include \
-	-I$(VARNISHSRC)/bin/varnishd \
-	-I$(VARNISHSRC)/lib/libvgz
-
-AM_LDFLAGS  = $(AM_LT_LDFLAGS)
-
-vmoddir = $(VMODDIR)
+vmoddir = @VMOD_DIR@
 vmod_LTLIBRARIES = libvmod_vslp.la
-vmod_srcdir = $(top_srcdir)/src
-vmodtool = $(VARNISHSRC)/lib/libvcc/vmodtool.py
 
-libvmod_vslp_la_LDFLAGS = $(AM_LDFLAGS) -module -export-dynamic -avoid-version -shared
+libvmod_vslp_la_LDFLAGS = -module -export-dynamic -avoid-version -shared
 
 libvmod_vslp_la_SOURCES = \
 	vmod_vslp.c \
@@ -22,24 +17,27 @@ nodist_libvmod_vslp_la_SOURCES = \
 	vcc_if.c \
 	vcc_if.h
 
-# BUILT_SOURCES is only a hack and dependency tracking does not help for the first build
-vmod_vslp.lo: vcc_if.h
+vmod_vslp.lo: vcc_if.c vcc_if.h
 
-vcc_if.c vcc_if.h: $(vmodtool) $(vmod_srcdir)/vmod_vslp.vcc
-	@PYTHON@ $(vmodtool) $(vmod_srcdir)/vmod_vslp.vcc
+vcc_if.c: vcc_if.h
 
-VMOD_TESTS = tests/*.vtc
+vcc_if.h: @VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
+	@VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
 
+VMOD_TESTS = $(top_srcdir)/src/tests/*.vtc
+.PHONY: $(VMOD_TESTS)
 
-check: $(VARNISHSRC)/bin/varnishtest/varnishtest
-	$(VARNISHSRC)/bin/varnishtest/varnishtest \
-		-Dvarnishd=$(VARNISHSRC)/bin/varnishd/varnishd \
-		-Dvmod_topbuild=$(abs_top_builddir) \
-		tests/*.vtc
+$(top_srcdir)/src/tests/*.vtc: libvmod_vslp.la
+	@VARNISHTEST@ -Dvarnishd=@VARNISHD@ -Dvmod_topbuild=$(abs_top_builddir) $@
+
+check: $(VMOD_TESTS)
 
 EXTRA_DIST = \
 	vmod_vslp.vcc	\
 	$(VMOD_TESTS)
 
-CLEANFILES = $(builddir)/vcc_if.c $(builddir)/vcc_if.h
-
+CLEANFILES = \
+	$(builddir)/vcc_if.c \
+	$(builddir)/vcc_if.h \
+	$(builddir)/vmod_vslp.rst \
+	$(builddir)/vmod_vslp.man.rst
