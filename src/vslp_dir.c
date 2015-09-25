@@ -382,7 +382,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		VCL_INT n_retry, VCL_BOOL altsrv_p, VCL_BOOL healthy)
 {
 	VCL_BACKEND be;
-	int chosen, be_choice, restarts_o = 0, restarts = 0;
+	int chosen, be_choice = 0, restarts_o = 0, restarts = 0;
 	struct vslp_state state;
 
         CHECK_OBJ_NOTNULL(vslpd, VSLPDIR_MAGIC);
