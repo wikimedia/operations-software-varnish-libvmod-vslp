@@ -37,7 +37,14 @@
 #include <time.h>
 
 #include "cache/cache.h"
-#include "cache/cache_director.h"
+
+#if VMOD_ABI_VERSION == 40
+# include "cache/cache_backend.h"
+# define BE_HEALTHY(dir, bo, changed) ((dir)->healthy((dir), (changed)))
+#else
+# include "cache/cache_director.h"
+# define BE_HEALTHY(dir, bo, changed) ((dir)->healthy((dir), (bo), (changed)))
+#endif
 
 #include "vrt.h"
 
@@ -178,7 +185,7 @@ vslp_choose_next_healthy(struct vslp_state *state, uint32_t n_retry)
 		be = state->vslpd->backend[chosen];
 		AN(be);
 
-		if(be->healthy(be, NULL, NULL))
+		if(BE_HEALTHY(be, NULL, NULL))
 		{
 			vslp_be_healthy(state, chosen);
 			break;
@@ -368,7 +375,7 @@ vslpdir_any_healthy(struct vslpdir *vslpd)
         for (u = 0; u < vslpd->n_backend; u++) {
 		be = vslpd->backend[u];
 		CHECK_OBJ_NOTNULL(be, DIRECTOR_MAGIC);
-		if (be->healthy(be, NULL, NULL)) {
+		if (BE_HEALTHY(be, NULL, NULL)) {
 			retval = 1;
 			break;
 		}
@@ -459,7 +466,7 @@ VCL_BACKEND vslpdir_pick_be(struct vslpdir *vslpd, const struct vrt_ctx *ctx, ui
 		return (be);
 	}
 
-	if (be->healthy(be, ctx->bo, NULL))
+	if (BE_HEALTHY(be, ctx->bo, NULL))
 	{
 		if(!vslp_be_healthy(&state, chosen))
 			 be_choice ^= be_choice;

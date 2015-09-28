@@ -110,7 +110,7 @@ FUNCTIONS
 =========
 
 _Note_ The vmod functions differ varnish 4.0 and 4.1. This is the
-documentation for the varnish 4.1 interface.
+documentation for the varnish 4.0 interface.
 
 VSLP needs to be configured before it can hand out backends. The functions not
 returning a backend, should only be called in vcl_init, as we can safely skip
@@ -150,23 +150,35 @@ Initializes the hash ring. This function must be called after all backends are
 added. The argument is the numbers of replicas the hash ring contains for each
 backend.
 
-INT .hash_string(STRING string, ENUM { CRC32, SHA256, RS } alg)
+INT .hash_string(STRING string, ENUM { CRC32, SHA256, RS })
 ---------------------------------------------------------------
 
 Returns the hash of its first argument using the hash
 algorithm defined, defaults to CRC32.
 
+BACKEND .backend()
+------------------
 
-BACKEND .backend(INT nte, BOOL altsrv_p, BOOL healthy, INT hash)
-----------------------------------------------------------------
+Returns a backend based on the default hash of the request URL.
 
-Returns the nth backend with respect of altsrv_p  and respect of its healthy
-state for the given hash. All parameters are optional, the defaults are:
+BACKEND .backend_n(INT, BOOL, BOOL, INT)
+----------------------------------------
 
- nte=0 will pick the first backend under respect of VSLP rules
- altsrv_p=ture
- healthy=true
- hash=0 will use a CRC32 of the request URL
+Returns the n-th backend (first parameter) with respect of altsrv_p
+(second parameter) and respect of its healthy state (third parameter)
+for the given hash (last parameter).
+
+BACKEND .backend_by_int(INT)
+----------------------------
+
+Returns a backend based on the value of its parameter. The value
+should be evenly distributet between 0 and MAX_INT to get a good
+distribution of requests.
+
+Example: To select a backend from director `vd` based on a string
+value hashed with `SHA256`, use::
+
+  vd.backend_by_int(vd.hash_string("some_string", SHA256))
 
 
 LIMITATIONS

@@ -26,12 +26,21 @@ if HAVE_VMOD_ABI_4_1
 vcc_if.h: @VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
 	@VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
 else
+vcc_if.h: @VMODTOOL@ $(top_srcdir)/src/vmod_vslp.40.vcc
+	@VMODTOOL@ $(top_srcdir)/src/vmod_vslp.40.vcc
 endif
 
 VMOD_TESTS = $(top_srcdir)/src/tests/*.vtc
+
+if HAVE_VMOD_ABI_4_1
+VMOD_TESTS += $(top_srcdir)/src/tests/v41/*.vtc
+else
+VMOD_TESTS += $(top_srcdir)/src/tests/v40/*.vtc
+endif
+
 .PHONY: $(VMOD_TESTS)
 
-$(top_srcdir)/src/tests/*.vtc: libvmod_vslp.la
+$(top_srcdir)/src/tests/*.vtc $(top_srcdir)/src/tests/*/*.vtc: libvmod_vslp.la
 	@VARNISHTEST@ -Dvarnishd=@VARNISHD@ -Dvmod_topbuild=$(abs_top_builddir) $@
 
 check: $(VMOD_TESTS)

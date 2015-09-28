@@ -12,7 +12,11 @@ doc_DATA = README.rst LICENSE
 dist_man_MANS = vmod_vslp.3
 MAINTAINERCLEANFILES = $(dist_man_MANS)
 
+if HAVE_VMOD_ABI_4_1
 vmod_vslp.3: README.rst
+else
+vmod_vslp.3: README.40.rst
+endif
 
 %.1 %.2 %.3 %.4 %.5 %.6 %.7 %.8 %.9:
 if HAVE_RST2MAN
