@@ -8,7 +8,9 @@ libvmod_vslp_la_LDFLAGS = -module -export-dynamic -avoid-version -shared
 libvmod_vslp_la_SOURCES = \
 	vmod_vslp.c \
 	vslp_dir.c \
+	vslp_dir.h \
 	vslp_hash.c \
+	vslp_hash.h \
 	crc32.c \
 	crc32.h
 
