@@ -63,6 +63,31 @@ VARNISH_VMOD_INCLUDES
 VARNISH_VMOD_DIR
 VARNISH_VMODTOOL
 
+AC_SUBST([VMOD_EXTRA_INCLUDES])
+_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$VMOD_INCLUDES $CPPFLAGS"
+AC_CHECK_HEADER(vgz.h, [],
+[
+ AC_ARG_VAR([VARNISHSRC], [path to Varnish source tree])
+ if test "x$VARNISHSRC" = x; then
+	AC_MSG_ERROR([vgz.h not found, set VARNISHSRC to your varnish source tree])
+ fi
+ VARNISHSRC=`cd $VARNISHSRC && pwd`
+ AC_CHECK_FILE([$VARNISHSRC/include/vrt.h],
+	[],
+	[AC_MSG_FAILURE(["$VARNISHSRC" is not a Varnish source directory])])
+ CPPFLAGS="$_CPPFLAGS"
+ CPPFLAGS="-I$VARNISHSRC/lib/libvgz $CPPFLAGS"
+ unset ac_cv_header_vgz_h
+ AC_CHECK_HEADER(vgz.h, [], [AC_MSG_FAILURE([vgz.h not found in "$VARNISHSRC"])])
+ VMOD_EXTRA_INCLUDES=-I$VARNISHSRC/lib/libvgz
+])
+
+CPPFLAGS="$_CPPFLAGS"
+
+# as long as we still need crc32 from libvgz from the Varnish source tree
+
+
 AC_PATH_PROG([VARNISHTEST], [varnishtest], [],
     [$LIBVARNISHAPI_BINDIR:$LIBVARNISHAPI_SBINDIR:$PATH])
 AC_PATH_PROG([VARNISHD], [varnishd], [],

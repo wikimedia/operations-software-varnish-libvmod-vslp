@@ -1,7 +1,4 @@
-AM_CPPFLAGS = @VMOD_INCLUDES@ -Wall -Werror
-#	-I$(VARNISHSRC)/include \
-#	-I$(VARNISHSRC)/bin/varnishd \
-#	-I$(VARNISHSRC)/lib/libvgz
+AM_CPPFLAGS = @VMOD_INCLUDES@ @VMOD_EXTRA_INCLUDES@ -Wall -Werror
 
 vmoddir = @VMOD_DIR@
 vmod_LTLIBRARIES = libvmod_vslp.la
