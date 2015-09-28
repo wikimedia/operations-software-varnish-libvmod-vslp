@@ -22,8 +22,11 @@ vmod_vslp.lo: vcc_if.c vcc_if.h
 
 vcc_if.c: vcc_if.h
 
+if HAVE_VMOD_ABI_4_1
 vcc_if.h: @VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
 	@VMODTOOL@ $(top_srcdir)/src/vmod_vslp.vcc
+else
+endif
 
 VMOD_TESTS = $(top_srcdir)/src/tests/*.vtc
 .PHONY: $(VMOD_TESTS)
