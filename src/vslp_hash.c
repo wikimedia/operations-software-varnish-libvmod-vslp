@@ -36,7 +36,7 @@
 #include "cache/cache.h"
 
 #include "vrt.h"
-#include "vgz.h"
+#include "crc32.h"
 #include "vsha256.h"
 
 #include "vslp_hash.h"

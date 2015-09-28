@@ -1,4 +1,4 @@
-AM_CPPFLAGS = @VMOD_INCLUDES@ @VMOD_EXTRA_INCLUDES@ -Wall -Werror
+AM_CPPFLAGS = @VMOD_INCLUDES@ -Wall -Werror
 
 vmoddir = @VMOD_DIR@
 vmod_LTLIBRARIES = libvmod_vslp.la
@@ -8,7 +8,9 @@ libvmod_vslp_la_LDFLAGS = -module -export-dynamic -avoid-version -shared
 libvmod_vslp_la_SOURCES = \
 	vmod_vslp.c \
 	vslp_dir.c \
-	vslp_hash.c
+	vslp_hash.c \
+	crc32.c \
+	crc32.h
 
 nodist_libvmod_vslp_la_SOURCES = \
 	vcc_if.c \
