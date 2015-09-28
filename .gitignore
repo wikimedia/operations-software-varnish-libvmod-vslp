@@ -1,3 +1,4 @@
+*~
 *.o
 *.so
 *.la
@@ -27,3 +28,4 @@ stamp-h1
 compile
 src/vmod_vslp.man.rst
 src/vmod_vslp.rst
+libvmod-vslp-*.tar.gz
