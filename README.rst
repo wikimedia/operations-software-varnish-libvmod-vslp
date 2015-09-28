@@ -113,7 +113,7 @@ _Note_ The vmod functions differ varnish 4.0 and 4.1. This is the
 documentation for the varnish 4.1 interface.
 
 VSLP needs to be configured before it can hand out backends. The functions not
-returning a backend, should only be called in vcl_init, as we can safely skip
+returning a backend should only be called in vcl_init, as we can safely skip
 locking for most parts of the code, if we do not modify the hash ring after
 initialization.
 
@@ -124,9 +124,9 @@ Adds a backend to the Director, must be called in before init_hashcircle().
 VOID .set_rampup_ratio(REAL)
 ----------------------------
 
-Sets the raito of requests (0.0 to 1.0) that goes to the next alternate backend
-to warm it up if the preferd backend is healthy. If the prefered backend just
-recoverd from beeing unhealthy, the ratio will be used to warm the prefered
+Sets the ratio of requests (0.0 to 1.0) that goes to the next alternate backend
+to warm it up when the preferd backend is healthy. If the preferred backend just
+recovered from being unhealthy, the ratio will be used to warm the preferred
 backend. Defaults to 0.1 (10%).
 
 VOID .set_rampup_time(DURATION)
