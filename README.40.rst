@@ -243,5 +243,4 @@ COPYRIGHT
 This document is licensed under the same license as the
 libvmod-vslp project. See LICENSE for details.
 
-Copyright (c) 2013-2015 UPLEX Nils Goroll Systemoptimierung. All rights
-reserved.
+Copyright 2013-2015 UPLEX Nils Goroll Systemoptimierung. All rights reserved.

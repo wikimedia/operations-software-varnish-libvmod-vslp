@@ -1,10 +1,10 @@
 /*-
- * Copyright (c) 2009-2013 UPLEX - Nils Goroll Systemoptimierung
+ * Copyright 2009-2013 UPLEX - Nils Goroll Systemoptimierung
  * All rights reserved.
  *
  * Authors: Nils Goroll <nils.goroll@uplex.de>
- *         Geoffrey Simmons <geoff.simmons@uplex.de>
- *         Julian Wiesener <jw@uplex.de>
+ *          Geoffrey Simmons <geoff.simmons@uplex.de>
+ *          Julian Wiesener <jw@uplex.de>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

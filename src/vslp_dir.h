@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2009-2013 UPLEX - Nils Goroll Systemoptimierung
+ * Copyright 2009-2013 UPLEX - Nils Goroll Systemoptimierung
  * All rights reserved.
  *
  * Author: Julian Wiesener <jw@uplex.de>
