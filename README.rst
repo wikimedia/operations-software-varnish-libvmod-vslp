@@ -211,13 +211,13 @@ Make targets:
 Installation directories
 ------------------------
 
-By default, the vmod configure script installs the built vmod in the
-same directory as Varnish, determined via ``pkg-config(1)``. The vmod
-installation directory can be overridden by passing the ``VMOD_DIR``
-variable to ``configure``.
+By default, the vmod ``configure`` script installs the built vmod in
+the same directory as Varnish, determined via ``pkg-config(1)``. The
+vmod installation directory can be overridden by passing the
+``VMOD_DIR`` variable to ``configure``.
 
 Other files like man-pages and documentation are installed in the
-locations determined by ``configure``, which inherits it's default
+locations determined by ``configure``, which inherits its default
 ``--prefix`` setting from Varnish.
 
 
