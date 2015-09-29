@@ -83,12 +83,9 @@ AC_CHECK_FILE([${VAPI_INCLUDE_DIR}/vmod_abi.h],
     ])
 
 AS_CASE([${VMOD_ABI_VERSION}],
-	[4.0*],	[AC_SUBST([VMOD_ABI_VERSION], [40])],
+	[4.0*],	[AC_MSG_ERROR([Usupported ABI version. Do you need the 4.0 branch?])]
 			[AC_SUBST([VMOD_ABI_VERSION], [41])]
 )
-AC_DEFINE_UNQUOTED(VMOD_ABI_VERSION, ${VMOD_ABI_VERSION},
-		   [our vmod abi version])
-AM_CONDITIONAL(HAVE_VMOD_ABI_4_1, [test "x${VMOD_ABI_VERSION}" = "x41"])
 
 # This corresponds to FreeBSD's WARNS level 6
 DEVELOPER_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wshadow -Wcast-align -Wunused-parameter -Wchar-subscripts -Winline -Wnested-externs -Wredundant-decls -Wformat"

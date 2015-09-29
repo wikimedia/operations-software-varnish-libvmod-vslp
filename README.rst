@@ -109,7 +109,7 @@ Exception To the Rule) ;-) http://varnish-cache.org/wiki/VTLA
 FUNCTIONS
 =========
 
-_Note_ The vmod functions differ varnish 4.0 and 4.1. This is the
+_Note_ The vmod functions differ for varnish 4.0 and 4.1. This is the
 documentation for the varnish 4.1 interface.
 
 VSLP needs to be configured before it can hand out backends. The functions not

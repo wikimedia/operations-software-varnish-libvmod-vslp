@@ -34,11 +34,7 @@
 #include <arpa/inet.h>
 
 #include "cache/cache.h"
-#if VMOD_ABI_VERSION == 40
-#include "cache/cache_backend.h"
-#else
 #include "cache/cache_director.h"
-#endif
 
 #include "vrt.h"
 #include "vbm.h"
@@ -140,8 +136,8 @@ vmod_vslp_hash_string(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, V
 	return (hash);
 }
 
-static VCL_BACKEND
-_vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i)
+VCL_BACKEND __match_proto__(td_vslp_vslp_backend)
+vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i)
 {
 	uint32_t hash = (uint32_t) i;
 	VCL_BACKEND be;
@@ -164,23 +160,3 @@ _vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_
 
 	return (be);
 }
-
-#if VMOD_ABI_VERSION == 40
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend)
-vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd) {
-	return _vmod_vslp_backend(ctx, vslpd, 0, 1, 1, 0);
-}
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend_n)
-vmod_vslp_backend_n(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i) {
-	return _vmod_vslp_backend(ctx, vslpd, n, altsrv_p, healthy, i);
-}
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend_by_int)
-vmod_vslp_backend_by_int(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n) {
-	return _vmod_vslp_backend(ctx, vslpd, 0, 1, 1, n);
-}
-#else
-VCL_BACKEND __match_proto__(td_vslp_vslp_backend)
-vmod_vslp_backend(const struct vrt_ctx *ctx, struct vmod_vslp_vslp *vslpd, VCL_INT n, VCL_BOOL altsrv_p, VCL_BOOL healthy,  VCL_INT i) {
-	return _vmod_vslp_backend(ctx, vslpd, n, altsrv_p, healthy, i);
-}
-#endif
