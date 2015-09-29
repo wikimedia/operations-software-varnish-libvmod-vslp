@@ -208,6 +208,18 @@ Make targets:
 * make check - runs the unit tests in ``src/tests/*.vtc``
 * make distcheck - run check and prepare a tarball of the vmod.
 
+Installation directories
+------------------------
+
+By default, the vmod configure script installs the built vmod in the
+same directory as Varnish, determined via ``pkg-config(1)``. The vmod
+installation directory can be overridden by passing the ``VMOD_DIR``
+variable to ``configure``.
+
+Other files like man-pages and documentation are installed in the
+locations determined by ``configure``, which inherits it's default
+``--prefix`` setting from Varnish.
+
 
 MISSING
 =======
