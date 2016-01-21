@@ -1,0 +1,6 @@
+libvmod-vslp (0.1-1wm) jessie-wikimedia; urgency=low
+
+  * Local package (WMF).
+  * Initial Debian packaging.
+
+ -- Emanuele Rocca <ema@wikimedia.org>  Thu, 04 Feb 2016 17:58:20 +0100

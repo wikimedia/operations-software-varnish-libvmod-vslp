@@ -1,0 +1,28 @@
+Source: libvmod-vslp
+Section: web
+Priority: extra
+Maintainer: Emanuele Rocca <ema@wikimedia.org>
+Build-Depends: debhelper (>= 9),
+ dh-autoreconf,
+ pkg-config,
+ python-docutils,
+ libvarnishapi-dev (>= 4.1.0)
+Standards-Version: 3.9.6
+Vcs-Git: git://code.uplex.de/uplex-varnish/libvmod-vslp.git
+
+Package: libvmod-vslp
+Architecture: any
+Depends: varnish (>= 4.1.0), ${Varnish:ABI}, ${shlibs:Depends}, ${misc:Depends}
+Description: Consistent Hashing Director Module for Varnish
+ libvmod-vslp is a Varnish this director providing stateless persistence (or
+ persistency if you prefer) for backend requests.
+
+Package: libvmod-vslp-dbg
+Architecture: any
+Depends: libvmod-vslp (= ${binary:Version}), ${misc:Depends}
+Section: debug
+Description: Consistent Hashing Director Module for Varnish (debug symbols)
+ libvmod-vslp is a Varnish this director providing stateless persistence (or
+ persistency if you prefer) for backend requests.
+ .
+ This package provides the debugging symbols for libvmod-vslp.
